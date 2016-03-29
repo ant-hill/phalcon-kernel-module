@@ -1,0 +1,30 @@
+{
+    "name": "ant-hill/phalcon-kernel-module",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ivan Pyankov",
+            "email": "unit.1985@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "dev",
+    "require": {
+        "ext-phalcon": ">=2.0.4",
+        "phalcon/incubator": "^2.0",
+        "symfony/console": "^3.0"
+    },
+    "require-dev":{
+        "sneakybobito/phalcon-stubs": "2.0.10",
+        "phpunit/phpunit": "^4.8"
+    }
+}
