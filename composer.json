@@ -1,5 +1,7 @@
 {
     "name": "ant-hill/phalcon-kernel-module",
+    "type": "phalcon-library",
+    "description":"Phalcon kernel module",
     "license": "MIT",
     "authors": [
         {
