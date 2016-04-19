@@ -3,6 +3,7 @@
 namespace Anthill\Phalcon\KernelModule;
 
 
+use Anthill\Phalcon\KernelModule\DependencyInjection\Loader;
 use Anthill\Phalcon\KernelModule\Mvc\AbstractModule;
 use Phalcon\Config;
 use Phalcon\Di;
@@ -59,14 +60,21 @@ abstract class Kernel implements KernelInterface
         }
 
         foreach ($this->registerModules() as $module) {
-            if($module instanceof AbstractModule){
+            if ($module instanceof AbstractModule) {
                 $module->setConfig($this->config);
             }
             $module->registerServices($this->getDI());
             $module->registerAutoloaders($this->getDI());
         }
+        $this->registerServices();
 
         $this->isBooted = true;
+    }
+
+    protected function registerServices()
+    {
+        $loader = new Loader($this->getDI(), $this->config);
+        $loader->load($this->config->get('services'));
     }
 
     /**

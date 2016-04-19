@@ -33,19 +33,26 @@ class Loader implements LoaderInterface
     /**
      * {@inheritdoc}
      */
-    public function load($servicePath)
+    public function load($serviceConfig)
+    {
+        if(!$serviceConfig instanceof Config){
+            return;
+        }
+        foreach ($serviceConfig as $serviceName => $service) {
+            // todo: strict checks
+            $this->replaceConfigParameter($service);
+            $this->getDi()->set($serviceName, $service->toArray(),(bool) $service->get('shared'));
+        }
+    }
+
+    public function loadByPath($servicePath)
     {
         if (!file_exists($servicePath)) {
             return;
         }
         /* @var $serviceConfig Config */
         $serviceConfig = Config\Loader::load($servicePath);
-
-        foreach ($serviceConfig as $serviceName => $service) {
-            // todo: strict checks
-            $this->replaceConfigParameter($service);
-            $this->getDi()->set($serviceName, $service->toArray());
-        }
+        $this->load($serviceConfig);
     }
 
     /**

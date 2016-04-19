@@ -2,6 +2,9 @@
 
 use Anthill\Phalcon\KernelModule\DependencyInjection\ServiceConstants as Service;
 use Tests\Anthill\Phalcon\KernelModule\DependencyInjection\Fixtures\ServiceInstance;
+use Tests\Anthill\Phalcon\KernelModule\DependencyInjection\Fixtures\ServiceInstance2;
+use Tests\Anthill\Phalcon\KernelModule\DependencyInjection\Fixtures\ServiceInstance3;
+use Tests\Anthill\Phalcon\KernelModule\DependencyInjection\Fixtures\ServiceInstance4;
 
 return [
     'MyTestService' => [
@@ -42,6 +45,18 @@ return [
                     Service::VALUE => 'valueE',
                 ]
             ]
-        ]
-    ]
+        ],
+        'shared' => true
+    ],
+    'MyTestService2' => [
+        Service::CLASS_NAME => ServiceInstance2::class,
+       'shared' => false
+    ],
+    'MyTestService3' => [
+        Service::CLASS_NAME => ServiceInstance3::class,
+       'shared' => true
+    ],
+    'MyTestService4' => array(
+        Service::CLASS_NAME => ServiceInstance4::class
+    )
 ];

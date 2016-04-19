@@ -10,9 +10,11 @@ class ServiceInstance
     private $paramC;
     public $paramD;
     public $paramE;
+    public static $number = 0;
 
     public function __construct($paramA, $paramB)
     {
+        self::$number++;
         $this->paramA = $paramA;
         $this->paramB = $paramB;
     }
