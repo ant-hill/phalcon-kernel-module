@@ -78,7 +78,7 @@ abstract class AbstractModule implements ModuleDefinitionInterface
     protected function buildServices(\Phalcon\DiInterface $dependencyInjector, Config $config, $servicePath)
     {
         $loader = new Loader($dependencyInjector, $config);
-        $loader->load($servicePath);
+        $loader->loadByPath($servicePath);
     }
 
     /**
