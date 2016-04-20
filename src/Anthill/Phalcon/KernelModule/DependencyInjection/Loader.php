@@ -3,6 +3,7 @@
 namespace Anthill\Phalcon\KernelModule\DependencyInjection;
 
 
+use Anthill\Phalcon\KernelModule\DependencyInjection\Exceptions\ConfigParseException;
 use Phalcon\Config;
 use Phalcon\DiInterface;
 use Rwillians\Stingray\Stingray;
@@ -35,13 +36,13 @@ class Loader implements LoaderInterface
      */
     public function load($serviceConfig)
     {
-        if(!$serviceConfig instanceof Config){
+        if (!$serviceConfig instanceof Config) {
             return;
         }
         foreach ($serviceConfig as $serviceName => $service) {
             // todo: strict checks
             $this->replaceConfigParameter($service);
-            $this->getDi()->set($serviceName, $service->toArray(),(bool) $service->get('shared'));
+            $this->getDi()->set($serviceName, $service->toArray(), (bool)$service->get('shared'));
         }
     }
 
@@ -58,6 +59,7 @@ class Loader implements LoaderInterface
     /**
      * replace ServiceConstants::TYPE_CONFIG_PARAMETER stubs to its values
      * @param Config $config
+     * @throws \Anthill\Phalcon\KernelModule\DependencyInjection\Exceptions\ConfigParseException
      */
     private function replaceConfigParameter(Config $config)
     {
@@ -73,6 +75,10 @@ class Loader implements LoaderInterface
                 }
                 $value = $item->get('value');
                 $newValue = Stingray::get($this->config, $value);
+                if ($newValue === null) {
+                    throw new ConfigParseException(sprintf('You must specify parameter "%s" in config',
+                        str_replace('.', ' => ', $value)));
+                }
                 $item->offsetSet('type', ServiceConstants::TYPE_PARAMETER);
                 $item->offsetSet('value', $newValue);
             }

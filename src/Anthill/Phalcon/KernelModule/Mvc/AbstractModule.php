@@ -61,17 +61,12 @@ abstract class AbstractModule implements ModuleDefinitionInterface
     public function registerServices(\Phalcon\DiInterface $dependencyInjector)
     {
         $configArray = [];
-        $servicePath = null;
-
         if (file_exists($this->getConfigPath())) {
             $configArray = include $this->getConfigPath();
         }
 
         $config = $this->buildConfig($configArray);
-
-        if (file_exists($this->getServicesPath())) {
-            $servicePath = include $this->getServicesPath();
-        }
+        $servicePath = $this->getServicesPath();
         $this->buildServices($dependencyInjector, $config, $servicePath);
     }
 
