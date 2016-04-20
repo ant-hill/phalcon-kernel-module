@@ -74,7 +74,7 @@ abstract class Kernel implements KernelInterface
     protected function registerServices()
     {
         $loader = new Loader($this->getDI(), $this->config);
-        $loader->load($this->config->get('services'));
+        $loader->loadByPath($this->config->get('services'));
     }
 
     /**
