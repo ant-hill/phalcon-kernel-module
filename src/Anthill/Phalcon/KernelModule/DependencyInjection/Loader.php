@@ -3,6 +3,7 @@
 namespace Anthill\Phalcon\KernelModule\DependencyInjection;
 
 
+use Anthill\Phalcon\KernelModule\ConfigLoader\LoaderFactory;
 use Anthill\Phalcon\KernelModule\DependencyInjection\Exceptions\ConfigParseException;
 use Phalcon\Config;
 use Phalcon\DiInterface;
@@ -20,7 +21,7 @@ class Loader implements LoaderInterface
     private $config;
 
     /**
-     * Loader constructor.
+     * ConfigLoader constructor.
      * @param DiInterface $di
      * @param Config $config
      */
@@ -51,8 +52,10 @@ class Loader implements LoaderInterface
         if (!file_exists($servicePath)) {
             return;
         }
+        // todo: must be from DI/constructor
+        $loaderFactory = new LoaderFactory();
         /* @var $serviceConfig Config */
-        $serviceConfig = Config\Loader::load($servicePath);
+        $serviceConfig = $loaderFactory->load($servicePath);
         $this->load($serviceConfig);
     }
 

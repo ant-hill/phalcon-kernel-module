@@ -3,6 +3,7 @@
 namespace Anthill\Phalcon\KernelModule;
 
 
+use Anthill\Phalcon\KernelModule\ConfigLoader\LoaderFactory;
 use Anthill\Phalcon\KernelModule\DependencyInjection\Loader;
 use Anthill\Phalcon\KernelModule\Mvc\AbstractModule;
 use Phalcon\Config;
@@ -53,10 +54,11 @@ abstract class Kernel implements KernelInterface
         if ($this->isBooted) {
             return;
         }
-        $this->config = $this->registerConfiguration(new Config\Loader());
+
+        $this->config = $this->registerConfiguration(new LoaderFactory());
 
         if (!$this->getDI()) {
-            $this->setDI(new Di\FactoryDefault());
+            $this->setDI(new Di());
         }
 
         foreach ($this->registerModules() as $module) {
@@ -71,19 +73,11 @@ abstract class Kernel implements KernelInterface
         $this->isBooted = true;
     }
 
-    protected function registerServices()
-    {
-        $loader = new Loader($this->getDI(), $this->config);
-        $loader->loadByPath($this->config->get('services'));
-    }
-
     /**
-     * @param DiInterface $dependencyInjector
+     * @param LoaderFactory $loader
+     * @return Config
      */
-    public function setDI(DiInterface $dependencyInjector)
-    {
-        $this->dependencyInjector = $dependencyInjector;
-    }
+    abstract public function registerConfiguration(LoaderFactory $loader);
 
     /**
      * @return DiInterface
@@ -94,10 +88,19 @@ abstract class Kernel implements KernelInterface
     }
 
     /**
-     * @param Config\Loader $loader
-     * @return Config
+     * @param DiInterface $dependencyInjector
      */
-    abstract public function registerConfiguration(\Phalcon\Config\Loader $loader);
+    public function setDI(DiInterface $dependencyInjector)
+    {
+        $this->dependencyInjector = $dependencyInjector;
+    }
+
+    protected function registerServices()
+    {
+        // todo: think about misambugous
+        $loader = new Loader($this->getDI(), $this->config);
+        $loader->load($this->config->get('services'));
+    }
 
     public function getConfig()
     {
