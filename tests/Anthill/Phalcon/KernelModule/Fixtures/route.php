@@ -1,9 +1,8 @@
 <?php
-return array(
-    'test' => array(
+return [
+    'test' => [
         'path' => '/about',
-        'handler' => '\\Tests\\Anthill\\Phalcon\\KernelModule\\Fixtures\\Test::index',
-//        'httpMethods' => ['GET', 'POST']
-    ),
-    
-);
+        'methods' => 'POST',
+        'handler' => '\\Tests\\Anthill\\Phalcon\\KernelModule\\Fixtures\\Test::index'
+    ],
+];

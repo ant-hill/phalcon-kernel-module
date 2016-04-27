@@ -3,8 +3,9 @@
 namespace Anthill\Phalcon\KernelModule\Mvc;
 
 
-use Anthill\Phalcon\KernelModule\DependencyInjection\Loader;
-use Anthill\Phalcon\KernelModule\DependencyInjection\LoaderInterface;
+use Anthill\Phalcon\KernelModule\ConfigLoader\LoaderFactoryInterface;
+use Anthill\Phalcon\KernelModule\DependencyInjection\ServiceLoader;
+use Anthill\Phalcon\KernelModule\KernelInterface;
 use Phalcon\Config;
 use Phalcon\Mvc\ModuleDefinitionInterface;
 
@@ -12,18 +13,35 @@ abstract class AbstractModule implements ModuleDefinitionInterface
 {
 
     /**
-     * @var Config
+     * @var \Anthill\Phalcon\KernelModule\ConfigLoader\LoaderFactoryInterface
      */
-    private $config;
+    private $loader;
 
-    public function setConfig(Config $config)
+    /**
+     * @var KernelInterface
+     */
+    private $kernelInterface;
+
+    /**
+     * @return KernelInterface
+     */
+    public function getKernel()
     {
-        $this->config = $config;
+        return $this->kernelInterface;
     }
 
-    public function getConfig()
+    /**
+     * @return \Anthill\Phalcon\KernelModule\ConfigLoader\LoaderFactoryInterface
+     */
+    public function getLoader()
     {
-        return $this->config;
+        return $this->loader;
+    }
+
+    public function __construct(KernelInterface $kernelInterface)
+    {
+        $this->loader = $kernelInterface->getConfigLoader();
+        $this->kernelInterface = $kernelInterface;
     }
 
     /**
@@ -34,14 +52,16 @@ abstract class AbstractModule implements ModuleDefinitionInterface
 
     /**
      * Get config path
-     * @return string
+     * @param LoaderFactoryInterface $loader
+     * @return Config
      */
-    abstract public function getConfigPath();
+    abstract public function getConfig(LoaderFactoryInterface $loader);
 
     /**
-     * @return string
+     * @param LoaderFactoryInterface $loader
+     * @return Config
      */
-    abstract public function getServicesPath();
+    abstract public function getServicesConfig(LoaderFactoryInterface $loader);
 
     /**
      * Registers an autoloader related to the module
@@ -60,37 +80,9 @@ abstract class AbstractModule implements ModuleDefinitionInterface
      */
     public function registerServices(\Phalcon\DiInterface $dependencyInjector)
     {
-        $configArray = [];
-        if (file_exists($this->getConfigPath())) {
-            $configArray = include $this->getConfigPath();
-        }
-
-        $config = $this->buildConfig($configArray);
-        $servicePath = $this->getServicesPath();
-        $this->buildServices($dependencyInjector, $config, $servicePath);
-    }
-
-    protected function buildServices(\Phalcon\DiInterface $dependencyInjector, Config $config, $servicePath)
-    {
-        $loader = new Loader($dependencyInjector, $config);
-        $loader->loadByPath($servicePath);
-    }
-
-    /**
-     * @param $configArray
-     * @return Config
-     */
-    protected function buildConfig($configArray)
-    {
-        $moduleNamespace = $this->getModuleName();
-        $value = null;
-        $newConfig = new Config($configArray);
-        $newConfig->merge($this->getConfig());
-        if ($newConfig->offsetExists($moduleNamespace)) {
-            $value = $newConfig->get($moduleNamespace);
-        }
-        $config = new Config();
-        $config->offsetSet($moduleNamespace, $value);
-        return $config;
+        $this->getKernel()->mergeConfig($this->getConfig($this->getLoader()));
+        $servicePath = $this->getServicesConfig($this->getLoader());
+        $loader = new ServiceLoader($this->getKernel());
+        $loader->load($servicePath);
     }
 }

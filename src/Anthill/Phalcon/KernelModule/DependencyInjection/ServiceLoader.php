@@ -2,14 +2,13 @@
 
 namespace Anthill\Phalcon\KernelModule\DependencyInjection;
 
-
-use Anthill\Phalcon\KernelModule\ConfigLoader\LoaderFactory;
 use Anthill\Phalcon\KernelModule\DependencyInjection\Exceptions\ConfigParseException;
+use Anthill\Phalcon\KernelModule\KernelInterface;
 use Phalcon\Config;
 use Phalcon\DiInterface;
 use Rwillians\Stingray\Stingray;
 
-class Loader implements LoaderInterface
+class ServiceLoader implements LoaderInterface
 {
     /**
      * @var DiInterface
@@ -21,16 +20,34 @@ class Loader implements LoaderInterface
     private $config;
 
     /**
-     * ConfigLoader constructor.
-     * @param DiInterface $di
-     * @param Config $config
+     * @var KernelInterface
      */
-    public function __construct(DiInterface $di, Config $config)
+    private $kernel;
+
+    /**
+     * @var \Anthill\Phalcon\KernelModule\ConfigLoader\LoaderFactoryInterface
+     */
+    private $configLoader;
+
+    /**
+     * ConfigLoader constructor.
+     * @param KernelInterface $kernelInterface
+     */
+    public function __construct(KernelInterface $kernelInterface)
     {
-        $this->di = $di;
-        $this->config = $config;
+        $this->kernel = $kernelInterface;
+        $this->configLoader = $kernelInterface->getConfigLoader();
+        $this->di = $kernelInterface->getDI();
+        $this->config = $kernelInterface->getConfig();
     }
 
+    /**
+     * @param Config $config
+     */
+    public function setConfig($config)
+    {
+        $this->config = $config;
+    }
 
     /**
      * {@inheritdoc}
@@ -45,18 +62,6 @@ class Loader implements LoaderInterface
             $this->replaceConfigParameter($service);
             $this->getDi()->set($serviceName, $service->toArray(), (bool)$service->get('shared'));
         }
-    }
-
-    public function loadByPath($servicePath)
-    {
-        if (!file_exists($servicePath)) {
-            return;
-        }
-        // todo: must be from DI/constructor
-        $loaderFactory = new LoaderFactory();
-        /* @var $serviceConfig Config */
-        $serviceConfig = $loaderFactory->load($servicePath);
-        $this->load($serviceConfig);
     }
 
     /**

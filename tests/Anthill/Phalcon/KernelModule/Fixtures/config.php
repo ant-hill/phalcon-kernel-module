@@ -1,14 +1,17 @@
 <?php
 
 return array(
-    'application' => array(
-        'http' => array(
-            'routes' => include __DIR__ . '/route.php'
+    'framework' => array(
+        'routes' => array(
+            array(
+                'type' => 'array',
+                'resource' => include __DIR__ . '/route.php'
+            )
         )
     ),
     'services' => array(
         'router' => array(
-            'className' => \Phalcon\Mvc\Router::class,
+            'className' => \Phalcon\Mvc\Router\Annotations::class,
             'arguments' => array(
                 array(
                     'type' => 'parameter',
@@ -19,6 +22,16 @@ return array(
         ),
         'view' => array(
             'className' => \Phalcon\Mvc\View::class,
+            'shared' => true
+        ),
+        'route_resolver' => array(
+            'className' => \Phalcon\Mvc\View::class,
+            'arguments' => array(
+                array(
+                    'type' => 'service',
+                    'name' => 'router'
+                )
+            ),
             'shared' => true
         ),
 

@@ -29,6 +29,7 @@ class Application extends \Symfony\Component\Console\Application implements Inje
     {
         $this->kernel = $kernel;
         parent::__construct($kernel->getName() . ' cli application');
+        //todo: move to ./bin/console
         $this->getDefinition()->addOption(new InputOption('--env', '-e', InputOption::VALUE_REQUIRED,
             'The Environment name.', $kernel->getEnvironment()));
     }

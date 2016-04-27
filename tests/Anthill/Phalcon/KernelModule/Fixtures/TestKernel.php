@@ -2,20 +2,23 @@
 
 namespace Tests\Anthill\Phalcon\KernelModule\Fixtures;
 
-
-use Anthill\Phalcon\KernelModule\ConfigLoader\LoaderFactory;
+use Anthill\Phalcon\KernelModule\ConfigLoader\LoaderFactoryInterface;
 use Anthill\Phalcon\KernelModule\Kernel;
 use Phalcon\Config;
 use Phalcon\Mvc\ModuleDefinitionInterface;
+
+/**
+ * @RoutePrefix("/")
+ */
 
 class TestKernel extends Kernel
 {
 
     /**
-     * @param LoaderFactory $loader
+     * @param LoaderFactoryInterface $loader
      * @return Config
      */
-    public function registerConfiguration(LoaderFactory $loader)
+    public function registerConfiguration(LoaderFactoryInterface $loader)
     {
         return $loader->load($this->getRootDir() . '/config.php');
     }
