@@ -3,7 +3,7 @@
 namespace Anthill\Phalcon\KernelModule\ConfigLoader;
 
 
-use Anthill\Phalcon\KernelModule\Loader\Exceptions\LoaderException;
+use Anthill\Phalcon\KernelModule\ConfigLoader\Exceptions\LoaderException;
 use Phalcon\Config;
 
 interface LoaderFactoryInterface

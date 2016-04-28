@@ -10,7 +10,6 @@ use Anthill\Phalcon\KernelModule\Router\RouterResolver;
 use Phalcon\Config;
 use Phalcon\Di;
 use Phalcon\DiInterface;
-use Phalcon\Mvc\RouterInterface;
 use Rwillians\Stingray\Stingray;
 
 abstract class Kernel implements KernelInterface
@@ -93,6 +92,7 @@ abstract class Kernel implements KernelInterface
     /**
      * @param LoaderFactoryInterface $loader
      * @return Config
+     * @throws \Anthill\Phalcon\KernelModule\ConfigLoader\Exceptions\LoaderException
      */
     abstract public function registerConfiguration(LoaderFactoryInterface $loader);
 
@@ -143,17 +143,15 @@ abstract class Kernel implements KernelInterface
      */
     public function mergeConfig(Config $config)
     {
-        return $config->merge($this->config);
+        $this->config = $config->merge($this->config);
+        return $this->config;
     }
 
     public function registerRoutes()
     {
-        /* @var $router RouterInterface */
-        $router = $this->getDI()->get('router');
         /* @var $resolver RouterResolver */
         $resolver = $this->getDI()->get('route_resolver');
         $routesConfig = Stingray::get($this->getConfig()->toArray(), 'framework.routes');
-        $resolver = new RouterResolver($router);
         $resolver->resolve($routesConfig);
     }
 }

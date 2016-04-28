@@ -10,17 +10,64 @@ use Phalcon\Mvc\ModuleDefinitionInterface;
 /**
  * @RoutePrefix("/")
  */
-
 class TestKernel extends Kernel
 {
+
+    private $rootDir = __DIR__;
+    private $modules = [];
+    private $configPath = [];
+
+    /**
+     * @return array
+     */
+    public function getModules()
+    {
+        return $this->modules;
+    }
+
+    /**
+     * @param array $modules
+     */
+    public function setModules($modules)
+    {
+        $this->modules = $modules;
+    }
+
+    /**
+     * @return array
+     */
+    public function getConfigPath()
+    {
+        if (!$this->configPath) {
+            $this->configPath = $this->getRootDir() . '/config.php';
+        }
+        return $this->configPath;
+    }
+
+    /**
+     * @param string $configPath
+     */
+    public function setConfigPath($configPath)
+    {
+        $this->configPath = $configPath;
+    }
+
+    /**
+     * @param string $rootDir
+     */
+    public function setRootDir($rootDir)
+    {
+        $this->rootDir = $rootDir;
+    }
 
     /**
      * @param LoaderFactoryInterface $loader
      * @return Config
+     * @throws \Anthill\Phalcon\KernelModule\ConfigLoader\Exceptions\LoaderException
      */
     public function registerConfiguration(LoaderFactoryInterface $loader)
     {
-        return $loader->load($this->getRootDir() . '/config.php');
+        return $loader->load($this->getConfigPath());
     }
 
     /**
@@ -28,7 +75,7 @@ class TestKernel extends Kernel
      */
     public function getRootDir()
     {
-        return __DIR__;
+        return $this->rootDir;
     }
 
     /**
@@ -36,7 +83,7 @@ class TestKernel extends Kernel
      */
     public function registerModules()
     {
-        return array();
+        return $this->getModules();
     }
 
     /**

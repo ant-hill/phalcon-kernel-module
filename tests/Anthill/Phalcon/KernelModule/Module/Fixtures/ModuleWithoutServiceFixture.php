@@ -1,11 +1,11 @@
 <?php
-namespace Tests\Anthill\Phalcon\KernelModule\DependencyInjection\Fixtures\Di;
+namespace Tests\Anthill\Phalcon\KernelModule\Module\Fixtures;
 
 use Anthill\Phalcon\KernelModule\ConfigLoader\LoaderFactoryInterface;
-use Anthill\Phalcon\KernelModule\Mvc\AbstractModule;
+use Anthill\Phalcon\KernelModule\Module\AbstractModule;
 use Phalcon\Config;
 
-class ServiceLoaderWithouitConfigFixture extends AbstractModule
+class ModuleWithoutServiceFixture extends AbstractModule
 {
 
     /**
@@ -24,6 +24,7 @@ class ServiceLoaderWithouitConfigFixture extends AbstractModule
      */
     public function getConfig(LoaderFactoryInterface $loader)
     {
+        return $loader->load(__DIR__ . '/config.php');
     }
 
     /**
@@ -32,6 +33,5 @@ class ServiceLoaderWithouitConfigFixture extends AbstractModule
      */
     public function getServicesConfig(LoaderFactoryInterface $loader)
     {
-        return $loader->load(__DIR__ . '/../services.php');
     }
 }

@@ -5,10 +5,11 @@ namespace Anthill\Phalcon\KernelModule\DependencyInjection;
 use Anthill\Phalcon\KernelModule\DependencyInjection\Exceptions\ConfigParseException;
 use Anthill\Phalcon\KernelModule\KernelInterface;
 use Phalcon\Config;
+use Phalcon\Di\InjectionAwareInterface;
 use Phalcon\DiInterface;
 use Rwillians\Stingray\Stingray;
 
-class ServiceLoader implements LoaderInterface
+class ServiceLoader implements LoaderInterface, InjectionAwareInterface
 {
     /**
      * @var DiInterface
@@ -50,6 +51,14 @@ class ServiceLoader implements LoaderInterface
     }
 
     /**
+     * @return Config
+     */
+    public function getConfig()
+    {
+        return $this->config;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function load($serviceConfig)
@@ -82,7 +91,7 @@ class ServiceLoader implements LoaderInterface
                     continue;
                 }
                 $value = $item->get('value');
-                $newValue = Stingray::get($this->config, $value);
+                $newValue = Stingray::get($this->getConfig(), $value);
                 if ($newValue === null) {
                     throw new ConfigParseException(sprintf('You must specify parameter "%s" in config',
                         str_replace('.', ' => ', $value)));
@@ -99,5 +108,15 @@ class ServiceLoader implements LoaderInterface
     public function getDi()
     {
         return $this->di;
+    }
+
+    /**
+     * Sets the dependency injector
+     *
+     * @param mixed $dependencyInjector
+     */
+    public function setDI(\Phalcon\DiInterface $dependencyInjector)
+    {
+        $this->di = $dependencyInjector;
     }
 }

@@ -25,7 +25,7 @@ return array(
             'shared' => true
         ),
         'route_resolver' => array(
-            'className' => \Phalcon\Mvc\View::class,
+            'className' => \Anthill\Phalcon\KernelModule\Router\RouterResolver::class,
             'arguments' => array(
                 array(
                     'type' => 'service',
