@@ -15,18 +15,22 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
 
     private $env = 'testEnv';
 
-    public function testAppDiIsInstanceOfDi()
+    /**
+     * @return Application
+     */
+    public function testAppHasDi()
     {
         $kernel = new TestKernel($this->env);
         $app = new \Anthill\Phalcon\KernelModule\Cli\Application($kernel);
-        $app->doRun(new ArgvInput(), new NullOutput());
+        $app->doRun(new StringInput(''), new NullOutput());
         $app->setAutoExit(false);
         $this->assertInstanceOf(DiInterface::class, $app->getDI());
         return $app;
     }
 
     /**
-     * @depends testAppDiIsInstanceOfDi
+     * @depends testAppHasDi
+     * @param Application $app
      */
     public function testApplicationCallCommandByName(Application $app)
     {
@@ -35,6 +39,6 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
         $mockObj->expects($this->once())->method('execute');
         $app->add($mockObj);
         $returnCode = $app->run($input, new NullOutput());
-        $this->assertEquals(0, $returnCode);
+        $this->assertSame(0, $returnCode);
     }
 }

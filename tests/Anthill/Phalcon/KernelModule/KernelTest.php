@@ -21,20 +21,8 @@ class KernelTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @depends testConfigInstanceOfConfig
-     */
-    public function testConfigIsRight(KernelInterface $kernel)
-    {
-        $config = $kernel->getConfig();
-        $this->assertEquals(array('application' => array('route' => realpath(__DIR__ . '/Fixtures/route.php'))),
-            $config->toArray()
-        );
-        return $kernel;
-    }
-
-    /**
      * @param KernelInterface $kernel
-     * @depends testConfigIsRight
+     * @depends testConfigInstanceOfConfig
      */
     public function testEnvironmentName(KernelInterface $kernel)
     {
@@ -74,9 +62,10 @@ class KernelTest extends \PHPUnit_Framework_TestCase
     }
     public function testConfigMerge()
     {
-        $configA = new Config(include __DIR__.'/Fixtures/config_a.php');
-        $configB = new Config(include __DIR__.'/Fixtures/config_b.php');
+        $configA = new Config(['paramA' => ['paramB' => 'valueA']]);
+        $configB = new Config(['paramA' => ['paramB' => 'valueB', 'paramC' => 'valueC']]);
         $configB->merge($configA);
+
         $this->assertEquals('valueA',$configB->paramA->paramB);
         $this->assertEquals('valueC',$configB->paramA->paramC);
 

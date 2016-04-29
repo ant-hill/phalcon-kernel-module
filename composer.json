@@ -22,7 +22,6 @@
     "minimum-stability": "dev",
     "require": {
         "ext-phalcon": ">=2.0.4",
-        "phalcon/incubator": "^2.0",
         "symfony/console": "^3.0",
         "rwillians/stingray": "^2.1"
     },

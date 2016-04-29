@@ -2,13 +2,14 @@
 
 namespace Anthill\Phalcon\KernelModule\DependencyInjection;
 
-
 use Anthill\Phalcon\KernelModule\DependencyInjection\Exceptions\ConfigParseException;
+use Anthill\Phalcon\KernelModule\KernelInterface;
 use Phalcon\Config;
+use Phalcon\Di\InjectionAwareInterface;
 use Phalcon\DiInterface;
 use Rwillians\Stingray\Stingray;
 
-class Loader implements LoaderInterface
+class ServiceLoader implements LoaderInterface, InjectionAwareInterface
 {
     /**
      * @var DiInterface
@@ -20,16 +21,42 @@ class Loader implements LoaderInterface
     private $config;
 
     /**
-     * Loader constructor.
-     * @param DiInterface $di
+     * @var KernelInterface
+     */
+    private $kernel;
+
+    /**
+     * @var \Anthill\Phalcon\KernelModule\ConfigLoader\LoaderFactoryInterface
+     */
+    private $configLoader;
+
+    /**
+     * ConfigLoader constructor.
+     * @param KernelInterface $kernelInterface
+     */
+    public function __construct(KernelInterface $kernelInterface)
+    {
+        $this->kernel = $kernelInterface;
+        $this->configLoader = $kernelInterface->getConfigLoader();
+        $this->di = $kernelInterface->getDI();
+        $this->config = $kernelInterface->getConfig();
+    }
+
+    /**
      * @param Config $config
      */
-    public function __construct(DiInterface $di, Config $config)
+    public function setConfig($config)
     {
-        $this->di = $di;
         $this->config = $config;
     }
 
+    /**
+     * @return Config
+     */
+    public function getConfig()
+    {
+        return $this->config;
+    }
 
     /**
      * {@inheritdoc}
@@ -44,16 +71,6 @@ class Loader implements LoaderInterface
             $this->replaceConfigParameter($service);
             $this->getDi()->set($serviceName, $service->toArray(), (bool)$service->get('shared'));
         }
-    }
-
-    public function loadByPath($servicePath)
-    {
-        if (!file_exists($servicePath)) {
-            return;
-        }
-        /* @var $serviceConfig Config */
-        $serviceConfig = Config\Loader::load($servicePath);
-        $this->load($serviceConfig);
     }
 
     /**
@@ -74,7 +91,7 @@ class Loader implements LoaderInterface
                     continue;
                 }
                 $value = $item->get('value');
-                $newValue = Stingray::get($this->config, $value);
+                $newValue = Stingray::get($this->getConfig(), $value);
                 if ($newValue === null) {
                     throw new ConfigParseException(sprintf('You must specify parameter "%s" in config',
                         str_replace('.', ' => ', $value)));
@@ -91,5 +108,15 @@ class Loader implements LoaderInterface
     public function getDi()
     {
         return $this->di;
+    }
+
+    /**
+     * Sets the dependency injector
+     *
+     * @param mixed $dependencyInjector
+     */
+    public function setDI(\Phalcon\DiInterface $dependencyInjector)
+    {
+        $this->di = $dependencyInjector;
     }
 }
